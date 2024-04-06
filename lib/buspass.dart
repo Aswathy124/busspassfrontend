@@ -1,6 +1,7 @@
-import 'package:buspass/payment.dart';
 import 'package:flutter/material.dart';
-
+import 'package:buspass/models/buspassregister.dart';
+import 'package:buspass/services/buspassregister.dart';
+import 'package:buspass/viewhostler.dart';
 
 class BusPass extends StatefulWidget {
   const BusPass({Key? key}) : super(key: key);
@@ -10,6 +11,8 @@ class BusPass extends StatefulWidget {
 }
 
 class _BusPassState extends State<BusPass> {
+  final BusPassService _busPassService = BusPassService();
+
   String _selectedFrom = 'Fisat';
   String _selectedTo = 'Fisat';
   int _selectedPasses = 1;
@@ -24,6 +27,14 @@ class _BusPassState extends State<BusPass> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context); // Navigate back
+          },
+        ),
+      ),
       body: SingleChildScrollView(
         child: Container(
           decoration: BoxDecoration(
@@ -236,7 +247,8 @@ class _BusPassState extends State<BusPass> {
                               Icon(Icons.calendar_today),
                               SizedBox(width: 5),
                               Text(
-                                '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
+                                '${_selectedDate.day}/${_selectedDate
+                                    .month}/${_selectedDate.year}',
                                 style: TextStyle(fontSize: 16),
                               ),
                             ],
@@ -245,18 +257,10 @@ class _BusPassState extends State<BusPass> {
                       ),
                       SizedBox(height: 20),
                       ElevatedButton(
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => Payment(key: UniqueKey()),
-                              ),
-                            );
-                          }
-                        },
+                        onPressed: _submitForm,
                         style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white, backgroundColor: Colors.blue,
+                          foregroundColor: Colors.white, backgroundColor: Colors
+                            .blue,
                         ),
                         child: Text('Submit'),
                       ),
@@ -270,6 +274,7 @@ class _BusPassState extends State<BusPass> {
       ),
     );
   }
+
   Widget _buildFieldContainer(String labelText, Widget child) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
@@ -303,5 +308,52 @@ class _BusPassState extends State<BusPass> {
       });
     }
   }
-}
 
+  Future<void> _submitForm() async {
+    if (_formKey.currentState!.validate()) {
+      final busPass = BusPassModel(
+        name: _name,
+        department: _department,
+        admissionNo: _admissionNo,
+        from: _selectedFrom,
+        to: _selectedTo,
+        numberOfPasses: _selectedPasses,
+        date: _selectedDate, // Add the date to BusPassModel
+      );
+      try {
+        await BusPassService().submitBusPass(busPass);
+        // Show success snackbar
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Bus pass submitted successfully!'),
+            duration: Duration(seconds: 3),
+          ),
+        );
+      } catch (e) {
+        // Show error snackbar
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to submit bus pass. Please try again.'),
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+
+      // // Show snackbar
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //     content: Text('Bus pass taken successfully!'),
+      //     duration: Duration(seconds: 3), // Adjust the duration as needed
+      //   ),
+      // );
+
+      // Navigate to the next screen
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ViewHostler(busPass: busPass),
+        ),
+      );
+    }
+  }
+}

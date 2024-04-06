@@ -41,7 +41,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 height: 30,
               ),
               Text(
-                'CampusCommute ',
+                'Campus Navigator ',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 30,
@@ -77,7 +77,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   ),
                   onPressed: () {
                     Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => LoginPage(),
+                      builder: (context) => ProfilePage(),
                     ));
                   },
                   child: Text(

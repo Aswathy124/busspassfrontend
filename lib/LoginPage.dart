@@ -1,114 +1,201 @@
 import 'package:buspass/DayScholar.dart';
 import 'package:buspass/FacultyPage.dart';
-import 'package:buspass/HostlerLogin.dart';
+import 'package:buspass/MailPage.dart';
+import 'package:buspass/demopage.dart';
+import 'package:buspass/facultysub.dart';
 import 'package:flutter/material.dart';
 
-
-
-class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
-
-  @override
-  State<LoginPage> createState() => _LoginPageState();
+void main() {
+  runApp(MyApp());
 }
 
-class _LoginPageState extends State<LoginPage> {
-  String initialText = ''; // Initial text content
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        primaryColor: Color.fromRGBO(0, 119, 190, 1), // Set app bar color to blue
+        primarySwatch: Colors.blue,
+      ),
+      debugShowCheckedModeBanner: false, // Remove the debug banner
+      home: ProfilePage(),
+    );
+  }
+}
+
+class ProfilePage extends StatefulWidget {
+  @override
+  _ProfilePageState createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStateMixin {
+  late double _top;
+  late double _initialTop;
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _top = 0.0;
+    _initialTop = 0.0;
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: 2),
+    );
+
+    _animation = Tween<double>(begin: 0.0, end: 100.0).animate(_controller)
+      ..addListener(() {
+        setState(() {
+          _top = _initialTop + _animation.value;
+        });
+      });
+
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void navigateToPage(String pageName) {
+    Navigator.pop(context); // Close the drawer
+    switch (pageName) {
+      case 'Hostler':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => LoginScreen()),
+        );
+        break;
+      case 'Day Scholar':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => DayScholor()),
+        );
+        break;
+      case 'Request to Faculty':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => Faculty()),
+        );
+        break;
+      default:
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size; // This gives us the total height and width of our device
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white), // Set icon color to white
-          onPressed: () {
-            Navigator.of(context).pop(); // Navigate back to the previous page
-          },
+        backgroundColor: Color.fromRGBO(27, 73, 114, 1.0), // Set app bar color to blue
+        title: Text(
+          'Welcome to Campus Navigator',
+          style: TextStyle(color: Colors.white), // Set the text color to white
         ),
         actions: [
-          PopupMenuButton<String>(
-            onSelected: (value) {
-              if (value == 'hostler') {
-                // Navigate to the hostler login page
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => HostlerLogin()),
-                );
-              } else if (value == 'day_scholar') {
-                // Navigate to the day scholar login page
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => DayScholor()),
-                );
-              }
-              else if (value == 'faculty') {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Faculty()),
-                );
-              }
-
-              // Handle other menu options if needed
+          IconButton(
+            icon: Icon(Icons.mail_outline_outlined, color: Colors.white),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => MailPage()),
+              );
             },
-
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-              PopupMenuItem<String>(
-                value: 'hostler',
-                child: Text('Hostler'),
-              ),
-              PopupMenuItem<String>(
-                value: 'day_scholar',
-                child: Text('Day Scholar'),
-              ),
-              PopupMenuItem<String>(
-                value: 'faculty',
-                child: Text('Faculty'),
-              ),
-            ],
-            icon: Icon(Icons.menu, color: Colors.white), // Set icon color to white
           ),
         ],
-        backgroundColor: Color.fromRGBO(0, 119, 190, 1), // Set app bar background color
-        elevation: 0, // Remove the app bar elevation
+        iconTheme: IconThemeData(color: Colors.white), // Make the menu icon white
       ),
-      body: Container(
-        color: Color.fromRGBO(0, 119, 190, 1), // Set background color similar to app bar color
-        child: Column(
-          children: <Widget>[
-            Container(
-              height: size.height * 0.45,
-              child: Stack(
-                children: [
-                  Positioned(
-                    top: size.height * 0.15, // Move the image down
-                    left: 0,
-                    right: 0,
-                    child: Image.asset(
-                      "assets/fisat.png",
-                      width: size.width * 0.80, // Allow width to take up available space
-                      height: size.height * 0.25, // Adjust height as needed
-                      fit: BoxFit.contain, // Adjust image fit as needed
+      drawer: Drawer(
+        child: Container(
+          color: Colors.black, // Set the background color to black
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Colors.black, // Set the background color to black
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(height: 10), // Adjust the spacing as needed
+                    CircleAvatar(
+                      backgroundColor: Colors.black, // Set the background color to black
+                      radius: 50, // Set the radius of the avatar
+                      backgroundImage: AssetImage('assets/fisat1.jpg'),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Text(
-                'Welcome to FISAT College, where transportation is made easy with our comprehensive bus facility, Your Digital Ticket to Campus Transit. Whether you are a day scholar, hosteler, or faculty member, our modern buses ensure a comfortable commute to and from campus. With digital ticketing and real-time tracking, traveling to FISAT is convenient and stress-free. Join us and make your journey to campus effortless ',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
+                  ],
                 ),
               ),
-            ),
-            SizedBox(height: 20),
-            // Add your other widgets or functionalities here
-          ],
+              ListTile(
+                title: Text(
+                  'Hostler',
+                  style: TextStyle(color: Colors.white), // Set the text color to white
+                ),
+                onTap: () {
+                  navigateToPage('Hostler');
+                },
+              ),
+              ListTile(
+                title: Text(
+                  'Day Scholar',
+                  style: TextStyle(color: Colors.white), // Set the text color to white
+                ),
+                onTap: () {
+                  navigateToPage('Day Scholar');
+                },
+              ),
+              ListTile(
+                title: Text(
+                  'Request to Faculty',
+                  style: TextStyle(color: Colors.white), // Set the text color to white
+                ),
+                onTap: () {
+                  navigateToPage('Request to Faculty');
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Container(
+          height: MediaQuery.of(context).size.height, // Set the background color to blue
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Opacity(
+                opacity: 0.7,
+                child: Image.asset(
+                  'assets/fisat3.webp',
+                  fit: BoxFit.cover,
+                ),
+              ),
+              Positioned(
+                top: MediaQuery.of(context).size.height / 4 + _top,
+                left: 0,
+                right: 0,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0), // Adjusted padding
+                  child: Text(
+                    'Welcome to FISAT College, where transportation is made easy with our comprehensive bus facility, Your Digital Ticket to Campus Transit. Whether you are a day scholar, hosteler, or faculty member, our modern buses ensure a comfortable commute to and from campus. With digital ticketing and real-time tracking, traveling to FISAT is convenient and stress-free. Join us and make your journey to campus effortless.',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white.withOpacity(1.0), // Set the opacity to 1.0 for fully opaque white
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

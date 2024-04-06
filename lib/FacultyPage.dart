@@ -12,6 +12,15 @@ class _FacultyState extends State<Faculty> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: Text('Faculty Login'), // Add a title to the app bar
+      ),
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
